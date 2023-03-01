@@ -1,15 +1,20 @@
 ﻿// sbgCommonLib headers
 #include <sbgCommon.h>
 
+#include <utils/common.h>
+#if MERCURY_ZEPHYR
+#include <zephyr/kernel.h>
+#endif
 //----------------------------------------------------------------------//
 //- Include specific header for WIN32 and UNIX platforms               -//
 //----------------------------------------------------------------------//
 #ifdef WIN32
-	#include <windows.h>
+#include <windows.h>
 #elif defined(__APPLE__)
-	#include <mach/mach_time.h>
+#include <mach/mach_time.h>
+#include <unistd.h>
 #else
-	#include <unistd.h>
+// #include <unistd.h>
 #endif
 
 //----------------------------------------------------------------------//
@@ -55,6 +60,8 @@ SBG_COMMON_LIB_API void sbgSleep(uint32_t ms)
 {
 #ifdef WIN32
 	Sleep(ms);
+#elif MERCURY_ZEPHYR
+	k_usleep(ms * 1000);
 #else
 	struct timespec			 req;
 	struct timespec			 rem;
@@ -77,6 +84,10 @@ SBG_COMMON_LIB_API void sbgSleep(uint32_t ms)
 		}
 	}
 #endif
+
+
+
+
 }
 
 SBG_COMMON_LIB_API void sbgCommonLibSetLogCallback(SbgCommonLibOnLogFunc logCallback)
@@ -127,19 +138,19 @@ SBG_COMMON_LIB_API void sbgPlatformDebugLogMsg(const char *pFileName, const char
 		switch (logType)
 		{
 		case SBG_DEBUG_LOG_TYPE_ERROR:
-			fprintf(stderr, "*ERR * %s(%"PRIu32"): %s - %s\n\r", pFunctionName, line, sbgErrorCodeToString(errorCode), errorMsg);
+			printf("*ERR * %s(%"PRIu32"): %s - %s\n\r", pFunctionName, line, sbgErrorCodeToString(errorCode), errorMsg);
 			break;
 		case SBG_DEBUG_LOG_TYPE_WARNING:
-			fprintf(stderr, "*WARN* %s(%"PRIu32"): %s - %s\n\r", pFunctionName, line, sbgErrorCodeToString(errorCode), errorMsg);
+			printf("*WARN* %s(%"PRIu32"): %s - %s\n\r", pFunctionName, line, sbgErrorCodeToString(errorCode), errorMsg);
 			break;
 		case SBG_DEBUG_LOG_TYPE_INFO:
-			fprintf(stderr, "*INFO* %s(%"PRIu32"): %s\n\r", pFunctionName, line, errorMsg);
+			printf("*INFO* %s(%"PRIu32"): %s\n\r", pFunctionName, line, errorMsg);
 			break;
 		case SBG_DEBUG_LOG_TYPE_DEBUG:
-			fprintf(stderr, "*DBG * %s(%"PRIu32"): %s\n\r", pFunctionName, line, errorMsg);
+			printf("*DBG * %s(%"PRIu32"): %s\n\r", pFunctionName, line, errorMsg);
 			break;
 		default:
-			fprintf(stderr, "*UKNW* %s(%"PRIu32"): %s\n\r", pFunctionName, line, errorMsg);
+			printf("*UKNW* %s(%"PRIu32"): %s\n\r", pFunctionName, line, errorMsg);
 			break;
 		}
 	}

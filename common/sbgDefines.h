@@ -34,20 +34,20 @@
 #define SBG_DEFINES_H
 
 // Standard headers
-#include <assert.h>
-#include <errno.h>
+// #include <assert.h>
+// #include <errno.h>
 #include <float.h>
 #include <inttypes.h>
-#include <limits.h>
+// #include <limits.h>
 #include <math.h>
-#include <stdarg.h>
+// #include <stdarg.h>
 #include <stdbool.h>
-#include <stddef.h>
+// #include <stddef.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include <time.h>
+// #include <time.h>
 
 // Local headers
 #include "sbgConfig.h"
@@ -57,9 +57,10 @@
 // cause "defined but not used" warnings. Redefine assert() in a way that safely
 // prevents this warning, i.e. without triggering the expression side effects.
 //
+#define NDEBUG
 #ifdef NDEBUG
 #undef assert
-#define assert(expression) ((void)sizeof(expression))
+#define assert(expression) {} // ((void)sizeof(expression))
 #endif // NDEBUG
 
 /*!

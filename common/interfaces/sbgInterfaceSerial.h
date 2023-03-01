@@ -43,6 +43,7 @@ extern "C" {
 // sbgCommonLib headers
 #include <sbgCommon.h>
 #include <interfaces/sbgInterface.h>
+#include <ports/generic_port.h>
 
 //----------------------------------------------------------------------//
 //- Public methods                                                     -//
@@ -50,13 +51,11 @@ extern "C" {
 
 /*!
  *	Initialize a serial interface for read and write operations.
- *
- *	\param[in]	pInterface						Pointer on an allocated interface instance to initialize.
- *	\param[in]	deviceName						Serial interface location (COM21 , /dev/ttys0, depending on platform).
- *	\param[in]	baudRate						Serial interface baud rate in bps.
+ *	\param[in]	pHandle							Pointer on an allocated interface instance to initialize.
+ *	\param[in]	port						    Serial port
  *	\return										SBG_NO_ERROR if the interface has been created.
  */
-SBG_COMMON_LIB_API SbgErrorCode sbgInterfaceSerialCreate(SbgInterface *pInterface, const char *deviceName, uint32_t baudRate);
+SBG_COMMON_LIB_API SbgErrorCode sbgInterfaceSerialCreate(SbgInterface *pHandle, GenericPort *port);
 
 //----------------------------------------------------------------------//
 //- Footer (close extern C block)                                      -//

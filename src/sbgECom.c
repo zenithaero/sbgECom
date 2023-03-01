@@ -1,6 +1,7 @@
 ﻿#include "sbgECom.h"
 #include <streamBuffer/sbgStreamBuffer.h>
 #include "commands/sbgEComCmdCommon.h"
+#include <utils/common.h>
 
 //----------------------------------------------------------------------//
 //- Public methods                                                     -//
@@ -118,7 +119,9 @@ SbgErrorCode sbgEComHandleOneLog(SbgEComHandle *pHandle)
 		//
 		// We have received an invalid frame
 		//
+#ifndef SUPPRESS_SBG_WARNING
 		SBG_LOG_WARNING(errorCode, "Invalid frame received");
+#endif
 	}
 	
 	return errorCode;
