@@ -1,21 +1,27 @@
 ﻿// sbgCommonLib headers
 #include <sbgCommon.h>
 
+// Mercury header
 #include <utils/common.h>
+
 #if MERCURY_ZEPHYR
 #include <zephyr/kernel.h>
 #endif
 //----------------------------------------------------------------------//
 //- Include specific header for WIN32 and UNIX platforms               -//
 //----------------------------------------------------------------------//
-#ifdef WIN32
+#if MERCURY_ZEPHYR
+// #include <unistd.h>
+#elif defined(WIN32)
 #include <windows.h>
 #elif defined(__APPLE__)
 #include <mach/mach_time.h>
 #include <unistd.h>
 #else
-// #include <unistd.h>
+#include <unistd.h>
 #endif
+
+#include <time.h>
 
 //----------------------------------------------------------------------//
 //- Global singleton for the log callback							   -//
@@ -32,7 +38,15 @@ SbgCommonLibOnLogFunc	gLogCallback = NULL;
 
 SBG_COMMON_LIB_API uint32_t sbgGetTime(void)
 {
-#ifdef WIN32
+#if MERCURY_ZEPHYR
+	struct timespec now;
+	clock_gettime(CLOCK_REALTIME, &now);
+
+	//
+	// Return the current time in ms
+	//
+	return now.tv_sec * 1000 + now.tv_nsec / 1000000;
+#elif defined(WIN32)
 	//
 	// Return the current time in ms
 	//
@@ -45,27 +59,19 @@ SBG_COMMON_LIB_API uint32_t sbgGetTime(void)
 	// Return the current time in ms
 	//
 	return (mach_absolute_time() * timeInfo.numer / timeInfo.denom) / 1000000.0;
-#else
-	struct timespec now;
-	clock_gettime(CLOCK_REALTIME, &now);
-
-	//
-	// Return the current time in ms
-	//
-	return now.tv_sec * 1000 + now.tv_nsec / 1000000;
 #endif
 }
 
 SBG_COMMON_LIB_API void sbgSleep(uint32_t ms)
 {
-#ifdef WIN32
-	Sleep(ms);
-#elif MERCURY_ZEPHYR
+#if MERCURY_ZEPHYR
 	k_usleep(ms * 1000);
+#elif defined(WIN32)
+	Sleep(ms);
 #else
-	struct timespec			 req;
-	struct timespec			 rem;
-	int						 ret;
+	struct timespec req;
+	struct timespec rem;
+	int ret;
 
 	req.tv_sec = ms / 1000;
 	req.tv_nsec = (ms % 1000) * 1000000L;
@@ -84,10 +90,6 @@ SBG_COMMON_LIB_API void sbgSleep(uint32_t ms)
 		}
 	}
 #endif
-
-
-
-
 }
 
 SBG_COMMON_LIB_API void sbgCommonLibSetLogCallback(SbgCommonLibOnLogFunc logCallback)
