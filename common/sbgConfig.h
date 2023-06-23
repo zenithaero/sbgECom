@@ -61,4 +61,6 @@
 #define SBG_CONFIG_ENABLE_LOG_INFO					(1)
 #define SBG_CONFIG_ENABLE_LOG_DEBUG					(1)
 
+#define SUPPRESS_SBG_WARNING
+
 #endif	// SBG_CONFIG_H

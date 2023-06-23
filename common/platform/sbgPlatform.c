@@ -1,17 +1,11 @@
 ﻿// sbgCommonLib headers
 #include <sbgCommon.h>
 
-// Mercury header
-#include <utils/common.h>
-
-#if MERCURY_ZEPHYR
-#include <zephyr/kernel.h>
-#endif
 //----------------------------------------------------------------------//
 //- Include specific header for WIN32 and UNIX platforms               -//
 //----------------------------------------------------------------------//
-#if MERCURY_ZEPHYR
-// #include <unistd.h>
+#ifdef KERNEL
+#include <zephyr/kernel.h>
 #elif defined(WIN32)
 #include <windows.h>
 #elif defined(__APPLE__)
@@ -38,7 +32,7 @@ SbgCommonLibOnLogFunc	gLogCallback = NULL;
 
 SBG_COMMON_LIB_API uint32_t sbgGetTime(void)
 {
-#if MERCURY_ZEPHYR
+#ifdef KERNEL
 	struct timespec now;
 	clock_gettime(CLOCK_REALTIME, &now);
 
@@ -59,12 +53,20 @@ SBG_COMMON_LIB_API uint32_t sbgGetTime(void)
 	// Return the current time in ms
 	//
 	return (mach_absolute_time() * timeInfo.numer / timeInfo.denom) / 1000000.0;
+#else
+	struct timespec now;
+	clock_gettime(CLOCK_REALTIME, &now);
+
+	//
+	// Return the current time in ms
+	//
+	return now.tv_sec * 1000 + now.tv_nsec / 1000000;
 #endif
 }
 
 SBG_COMMON_LIB_API void sbgSleep(uint32_t ms)
 {
-#if MERCURY_ZEPHYR
+#ifdef KERNEL
 	k_usleep(ms * 1000);
 #elif defined(WIN32)
 	Sleep(ms);
