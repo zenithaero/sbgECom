@@ -80,7 +80,11 @@ SBG_COMMON_LIB_API void sbgSleep(uint32_t ms)
 	{
 		ret = nanosleep(&req, &rem);
 
-		if ((ret == 0) || (errno != EINTR))
+		if (ret == 0
+	#ifndef __APPLE__
+		|| (errno != EINTR)
+	#endif	
+	)
 		{
 			break;
 		}
