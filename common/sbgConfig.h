@@ -56,11 +56,20 @@
  * Enable all error logs
  * Default: Enabled
  */
+
+#define SBG_SUPPRESS_LOG 1
+
+#if SBG_SUPPRESS_LOG
+#define SUPPRESS_SBG_WARNING
+#define SBG_CONFIG_ENABLE_LOG_ERROR					(0)
+#define SBG_CONFIG_ENABLE_LOG_WARNING				(0)
+#define SBG_CONFIG_ENABLE_LOG_INFO					(0)
+#define SBG_CONFIG_ENABLE_LOG_DEBUG					(0)
+#else
 #define SBG_CONFIG_ENABLE_LOG_ERROR					(1)
 #define SBG_CONFIG_ENABLE_LOG_WARNING				(1)
 #define SBG_CONFIG_ENABLE_LOG_INFO					(1)
 #define SBG_CONFIG_ENABLE_LOG_DEBUG					(1)
-
-#define SUPPRESS_SBG_WARNING
+#endif
 
 #endif	// SBG_CONFIG_H
