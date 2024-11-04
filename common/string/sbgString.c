@@ -1550,7 +1550,7 @@ SBG_COMMON_LIB_API SbgErrorCode sbgStringFromFloat(SbgString *pString, float val
 		size_t							 oldCapacity;
 		int								 result;
 
-		result = snprintf(pString->pBuffer, pString->capacity, "%f", value);
+		result = snprintf(pString->pBuffer, pString->capacity, "%f", (double) value);
 
 		assert(result >= 0);
 
@@ -1564,7 +1564,7 @@ SBG_COMMON_LIB_API SbgErrorCode sbgStringFromFloat(SbgString *pString, float val
 		{
 			if (length >= oldCapacity)
 			{
-				snprintf(pString->pBuffer, pString->capacity, "%f", value);
+				snprintf(pString->pBuffer, pString->capacity, "%f", (double) value);
 			}
 
 			pString->length = (size_t)length;
