@@ -57,7 +57,9 @@ SBG_COMMON_LIB_API uint32_t sbgGetTime(void)
 
 SBG_COMMON_LIB_API void sbgSleep(uint32_t ms)
 {
-#ifdef WIN32
+#ifdef KERNEL
+    k_msleep(ms);
+#elif defined(WIN32)
     Sleep(ms);
 #else
     struct timespec req;
