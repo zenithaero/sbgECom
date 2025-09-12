@@ -20,8 +20,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED YES)
 option(BUILD_EXAMPLES           "Build examples" OFF)
 option(BUILD_TOOLS              "Build tools" OFF)
 option(USE_DEPRECATED_MACROS    "Enable deprecated preprocessor defines and macros" ON)
+option(ENABLE_INSTALL           "Enable library installation and export" ON)
 
 # Display chosen options
+message(STATUS "Configuring sbgECom ${PROJECT_VERSION}")
 message(STATUS "C Standard: ${CMAKE_C_STANDARD}")
 message(STATUS "C++ Standard: ${CMAKE_CXX_STANDARD}")
 message(STATUS "Build Examples: ${BUILD_EXAMPLES}")
@@ -59,6 +61,7 @@ if(__ZEPHYR__)
     target_link_libraries(${PROJECT_NAME} PRIVATE zephyr_interface)
     target_compile_definitions(${PROJECT_NAME} PRIVATE __ZEPHYR__)
     target_compile_options(${PROJECT_NAME} PRIVATE -Wno-maybe-uninitialized)
+    set(ENABLE_INSTALL OFF) # Disable install for zephyr build
 endif()
 
 target_sources(${PROJECT_NAME} PRIVATE ${COMMON_SRC} ${ECOM_SRC})
@@ -164,7 +167,7 @@ endif()
 # Install the main library target
 #
 
-if(NOT __ZEPHYR__)
+if(ENABLE_INSTALL)
     # Export the target so it can be used by other projects
     install(TARGETS ${PROJECT_NAME}
         EXPORT sbgEComTargets
