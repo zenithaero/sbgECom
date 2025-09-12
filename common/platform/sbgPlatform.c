@@ -4,12 +4,14 @@
 //----------------------------------------------------------------------//
 //- Include specific header for WIN32 and UNIX platforms               -//
 //----------------------------------------------------------------------//
-#ifdef WIN32
-    #include <windows.h>
+#ifdef __ZEPHYR__
+#include <zephyr/kernel.h>
+#elif defined(WIN32)
+#include <windows.h>
 #elif defined(__APPLE__)
-    #include <mach/mach_time.h>
+#include <mach/mach_time.h>
 #else
-    #include <unistd.h>
+#include <unistd.h>
 #endif
 
 //----------------------------------------------------------------------//
@@ -19,7 +21,7 @@
 /*!
  * Unique singleton used to log error messages.
  */
-SbgCommonLibOnLogFunc   gLogCallback = NULL;
+SbgCommonLibOnLogFunc gLogCallback = NULL;
 
 //----------------------------------------------------------------------//
 //- Public functions                                                   -//
@@ -27,13 +29,15 @@ SbgCommonLibOnLogFunc   gLogCallback = NULL;
 
 SBG_COMMON_LIB_API uint32_t sbgGetTime(void)
 {
-#ifdef WIN32
+#ifdef __ZEPHYR__
+    return (uint32_t)k_uptime_get();
+#elif defined(WIN32)
     //
     // Return the current time in ms
     //
     return clock() / (CLOCKS_PER_SEC / 1000);
 #elif defined(__APPLE__)
-    mach_timebase_info_data_t   timeInfo;
+    mach_timebase_info_data_t timeInfo;
     mach_timebase_info(&timeInfo);
 
     //
@@ -53,12 +57,14 @@ SBG_COMMON_LIB_API uint32_t sbgGetTime(void)
 
 SBG_COMMON_LIB_API void sbgSleep(uint32_t ms)
 {
-#ifdef WIN32
+#ifdef __ZEPHYR__
+    k_msleep(ms);
+#elif defined(WIN32)
     Sleep(ms);
 #else
-    struct timespec          req;
-    struct timespec          rem;
-    int                      ret;
+    struct timespec req;
+    struct timespec rem;
+    int ret;
 
     req.tv_sec = ms / 1000;
     req.tv_nsec = (ms % 1000) * 1000000L;
@@ -89,8 +95,8 @@ SBG_COMMON_LIB_API void sbgCommonLibSetLogCallback(SbgCommonLibOnLogFunc logCall
 
 SBG_COMMON_LIB_API void sbgPlatformDebugLogMsg(const char *pFileName, const char *pFunctionName, uint32_t line, const char *pCategory, SbgDebugLogType logType, SbgErrorCode errorCode, const char *pFormat, ...)
 {
-    char        errorMsg[SBG_CONFIG_LOG_MAX_SIZE];
-    va_list     args;
+    char errorMsg[SBG_CONFIG_LOG_MAX_SIZE];
+    va_list args;
 
     assert(pFileName);
     assert(pFunctionName);
@@ -127,19 +133,19 @@ SBG_COMMON_LIB_API void sbgPlatformDebugLogMsg(const char *pFileName, const char
         switch (logType)
         {
         case SBG_DEBUG_LOG_TYPE_ERROR:
-            fprintf(stderr, "*ERR * %s(%"PRIu32"): %s - %s\n\r", pFunctionName, line, sbgErrorCodeToString(errorCode), errorMsg);
+            fprintf(stderr, "*ERR * %s(%" PRIu32 "): %s - %s\n\r", pFunctionName, line, sbgErrorCodeToString(errorCode), errorMsg);
             break;
         case SBG_DEBUG_LOG_TYPE_WARNING:
-            fprintf(stderr, "*WARN* %s(%"PRIu32"): %s - %s\n\r", pFunctionName, line, sbgErrorCodeToString(errorCode), errorMsg);
+            fprintf(stderr, "*WARN* %s(%" PRIu32 "): %s - %s\n\r", pFunctionName, line, sbgErrorCodeToString(errorCode), errorMsg);
             break;
         case SBG_DEBUG_LOG_TYPE_INFO:
-            fprintf(stderr, "*INFO* %s(%"PRIu32"): %s\n\r", pFunctionName, line, errorMsg);
+            fprintf(stderr, "*INFO* %s(%" PRIu32 "): %s\n\r", pFunctionName, line, errorMsg);
             break;
         case SBG_DEBUG_LOG_TYPE_DEBUG:
-            fprintf(stderr, "*DBG * %s(%"PRIu32"): %s\n\r", pFunctionName, line, errorMsg);
+            fprintf(stderr, "*DBG * %s(%" PRIu32 "): %s\n\r", pFunctionName, line, errorMsg);
             break;
         default:
-            fprintf(stderr, "*UKNW* %s(%"PRIu32"): %s\n\r", pFunctionName, line, errorMsg);
+            fprintf(stderr, "*UKNW* %s(%" PRIu32 "): %s\n\r", pFunctionName, line, errorMsg);
             break;
         }
     }

@@ -47,6 +47,20 @@ else ()
     list(REMOVE_ITEM COMMON_SRC ${PROJECT_SOURCE_DIR}/common/interfaces/sbgInterfaceSerialUnix.c)
 endif()
 
+# Exclude files for zephyr build
+if(__ZEPHYR__)
+    message(STATUS "Excluding files for Zephyr build")
+    file(GLOB_RECURSE COMMON_SRC_REMOVE 
+        ${PROJECT_SOURCE_DIR}/common/interfaces/*.c 
+        ${PROJECT_SOURCE_DIR}/common/debug/*.c
+        ${PROJECT_SOURCE_DIR}/common/network/*.c)
+    list(REMOVE_ITEM COMMON_SRC_REMOVE ${PROJECT_SOURCE_DIR}/common/interfaces/sbgInterface.c) # whitelist
+    list(REMOVE_ITEM COMMON_SRC ${COMMON_SRC_REMOVE})
+    target_link_libraries(${PROJECT_NAME} PRIVATE zephyr_interface)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE __ZEPHYR__)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wno-maybe-uninitialized)
+endif()
+
 target_sources(${PROJECT_NAME} PRIVATE ${COMMON_SRC} ${ECOM_SRC})
 
 target_include_directories(${PROJECT_NAME}
@@ -150,47 +164,49 @@ endif()
 # Install the main library target
 #
 
-# Export the target so it can be used by other projects
-install(TARGETS ${PROJECT_NAME}
-    EXPORT sbgEComTargets
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
-    RUNTIME DESTINATION bin
-    INCLUDES DESTINATION include)
+if(NOT __ZEPHYR__)
+    # Export the target so it can be used by other projects
+    install(TARGETS ${PROJECT_NAME}
+        EXPORT sbgEComTargets
+        ARCHIVE DESTINATION lib
+        LIBRARY DESTINATION lib
+        RUNTIME DESTINATION bin
+        INCLUDES DESTINATION include)
 
-# Export CMake targets for use in other projects
-install(EXPORT sbgEComTargets
-        FILE sbgEComTargets.cmake
-        NAMESPACE sbgECom::
-        DESTINATION lib/cmake/sbgECom)
+    # Export CMake targets for use in other projects
+    install(EXPORT sbgEComTargets
+            FILE sbgEComTargets.cmake
+            NAMESPACE sbgECom::
+            DESTINATION lib/cmake/sbgECom)
 
-# Create a version file for compatibility checks
-include(CMakePackageConfigHelpers)
-write_basic_package_version_file(
-    "${CMAKE_CURRENT_BINARY_DIR}/sbgEComConfigVersion.cmake"
-    VERSION 5.3.2276
-    COMPATIBILITY SameMajorVersion
-)
+    # Create a version file for compatibility checks
+    include(CMakePackageConfigHelpers)
+    write_basic_package_version_file(
+        "${CMAKE_CURRENT_BINARY_DIR}/sbgEComConfigVersion.cmake"
+        VERSION 5.3.2276
+        COMPATIBILITY SameMajorVersion
+    )
 
-# Create a config file to describe the package
-configure_package_config_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/sbgEComConfig.in.cmake"
-    "${CMAKE_CURRENT_BINARY_DIR}/sbgEComConfig.cmake"
-    INSTALL_DESTINATION lib/cmake/sbgECom
-)
+    # Create a config file to describe the package
+    configure_package_config_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/cmake/sbgEComConfig.in.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/sbgEComConfig.cmake"
+        INSTALL_DESTINATION lib/cmake/sbgECom
+    )
 
-# Install cmake config  and version files
-install(FILES
-    "${CMAKE_CURRENT_BINARY_DIR}/sbgEComConfig.cmake"
-    "${CMAKE_CURRENT_BINARY_DIR}/sbgEComConfigVersion.cmake"
-    DESTINATION lib/cmake/sbgECom
-)
+    # Install cmake config  and version files
+    install(FILES
+        "${CMAKE_CURRENT_BINARY_DIR}/sbgEComConfig.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/sbgEComConfigVersion.cmake"
+        DESTINATION lib/cmake/sbgECom
+    )
 
-# Install header files from common and src directories
-install(DIRECTORY common/
-        DESTINATION include
-        FILES_MATCHING PATTERN "*.h")
+    # Install header files from common and src directories
+    install(DIRECTORY common/
+            DESTINATION include
+            FILES_MATCHING PATTERN "*.h")
 
-install(DIRECTORY src/
-        DESTINATION include
-        FILES_MATCHING PATTERN "*.h")
+    install(DIRECTORY src/
+            DESTINATION include
+            FILES_MATCHING PATTERN "*.h")
+endif()
