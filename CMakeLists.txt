@@ -24,11 +24,14 @@ option(ENABLE_INSTALL           "Enable library installation and export" ON)
 
 # Display chosen options
 message(STATUS "Configuring sbgECom ${PROJECT_VERSION}")
-message(STATUS "C Standard: ${CMAKE_C_STANDARD}")
-message(STATUS "C++ Standard: ${CMAKE_CXX_STANDARD}")
-message(STATUS "Build Examples: ${BUILD_EXAMPLES}")
-message(STATUS "Build Tools: ${BUILD_TOOLS}")
-message(STATUS "Use Deprecated Macros: ${USE_DEPRECATED_MACROS}")
+
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME))
+    message(STATUS "C Standard: ${CMAKE_C_STANDARD}")
+    message(STATUS "C++ Standard: ${CMAKE_CXX_STANDARD}")
+    message(STATUS "Build Examples: ${BUILD_EXAMPLES}")
+    message(STATUS "Build Tools: ${BUILD_TOOLS}")
+    message(STATUS "Use Deprecated Macros: ${USE_DEPRECATED_MACROS}")
+endif()
 
 #
 # sbgECom library
