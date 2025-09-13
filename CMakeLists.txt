@@ -25,7 +25,7 @@ option(ENABLE_INSTALL           "Enable library installation and export" ON)
 # Display chosen options
 message(STATUS "Configuring sbgECom ${PROJECT_VERSION}")
 
-if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME))
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     message(STATUS "C Standard: ${CMAKE_C_STANDARD}")
     message(STATUS "C++ Standard: ${CMAKE_CXX_STANDARD}")
     message(STATUS "Build Examples: ${BUILD_EXAMPLES}")
