@@ -4,7 +4,7 @@
 //----------------------------------------------------------------------//
 //- Include specific header for WIN32 and UNIX platforms               -//
 //----------------------------------------------------------------------//
-#ifdef __ZEPHYR__
+#ifdef CONFIG_ZEPHYR
 #include <zephyr/kernel.h>
 #elif defined(WIN32)
 #include <windows.h>
@@ -29,7 +29,7 @@ SbgCommonLibOnLogFunc gLogCallback = NULL;
 
 SBG_COMMON_LIB_API uint32_t sbgGetTime(void)
 {
-#ifdef __ZEPHYR__
+#ifdef CONFIG_ZEPHYR
     return (uint32_t)k_uptime_get();
 #elif defined(WIN32)
     //
@@ -57,7 +57,7 @@ SBG_COMMON_LIB_API uint32_t sbgGetTime(void)
 
 SBG_COMMON_LIB_API void sbgSleep(uint32_t ms)
 {
-#ifdef __ZEPHYR__
+#ifdef CONFIG_ZEPHYR
     k_msleep(ms);
 #elif defined(WIN32)
     Sleep(ms);

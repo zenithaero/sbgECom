@@ -53,7 +53,7 @@ else ()
 endif()
 
 # Exclude files for zephyr build
-if(__ZEPHYR__)
+if(CONFIG_ZEPHYR)
     message(STATUS "Excluding files for Zephyr build")
     file(GLOB_RECURSE COMMON_SRC_REMOVE 
         ${PROJECT_SOURCE_DIR}/common/interfaces/*.c 
@@ -62,7 +62,7 @@ if(__ZEPHYR__)
     list(REMOVE_ITEM COMMON_SRC_REMOVE ${PROJECT_SOURCE_DIR}/common/interfaces/sbgInterface.c) # whitelist
     list(REMOVE_ITEM COMMON_SRC ${COMMON_SRC_REMOVE})
     target_link_libraries(${PROJECT_NAME} PRIVATE zephyr_interface)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE __ZEPHYR__)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE CONFIG_ZEPHYR)
     target_compile_options(${PROJECT_NAME} PRIVATE -Wno-maybe-uninitialized)
     set(ENABLE_INSTALL OFF) # Disable install for zephyr build
 endif()
